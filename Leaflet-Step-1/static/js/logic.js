@@ -39,18 +39,9 @@ function createFeatures(earthquakeData) {
 }
 
 function createMap(earthquakes) {
-  // Define the map layers
-  var airmap = L.tileLayer(
-    "https://api.mapbox.com/styles/v1/mfatih72/ck30s2f5b19ws1cpmmw6zfumm/tiles/256/{z}/{x}/{y}?" +
-      "access_token=API_KEY"
-  );
+  // Create  map layers
 
-  var satellite = L.tileLayer(
-    "https://api.mapbox.com/styles/v1/mfatih72/ck30r72r818te1cruud5wk075/tiles/256/{z}/{x}/{y}?" +
-      "access_token=API_KEY"
-  );
-
-  var lightMap = L.tileLayer(
+  let airmap = L.tileLayer(
     "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
     {
       attribution:
@@ -60,11 +51,84 @@ function createMap(earthquakes) {
     }
   );
 
-  // Define base maps
-  var baseMaps = {
-    LightMap: lightMap,
-    AirMap: airmap,
-    Satellite: satellite,
+  let satellite = L.tileLayer(
+    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+    {
+      attribution:
+        'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      id: "mapbox/streets-v11",
+      accessToken: API_KEY,
+    }
+  );
+
+  let lightMap = L.tileLayer(
+    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+    {
+      attribution:
+        'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      id: "mapbox/streets-v11",
+      accessToken: API_KEY,
+    }
+  );
+
+  // Create base maps
+  let baseMaps = {
+    Satellite: lightMap,
+    Grayscale: airmap,
+    Outdoors: satellite,
   };
 
-  
+  // Create tectonic layer
+  let tectonicPlates = new L.LayerGroup();
+
+  // Create overlay object to hold overlay layer
+  let overlayMaps = {
+    "Fault Lines": earthquakes,
+    Earthquakes: tectonicPlates,
+  };
+
+  // Create legend
+  var legend = L.control({
+    position: "bottomleft",
+  });
+
+  legend.onAdd = function (myMap) {
+    var div = L.DomUtil.create("div", "info legend"),
+      grades = [0, 1, 2, 3, 4, 5],
+      labels = [];
+
+    // Create legend
+    for (var i = 0; i < grades.length; i++) {
+      div.innerHTML +=
+        '<i style="background:' +
+        getColor(grades[i] + 1) +
+        '"></i> ' +
+        grades[i] +
+        (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+    }
+    return div;
+  };
+  legend.addTo(myMap);
+}
+
+// Create color function
+function getColor(magnitude) {
+  if (magnitude > 5) {
+    return "red";
+  } else if (magnitude > 4) {
+    return "lightred";
+  } else if (magnitude > 3) {
+    return "orange";
+  } else if (magnitude > 2) {
+    return "yellow";
+  } else if (magnitude > 1) {
+    return "green";
+  } else {
+    return "purple";
+  }
+}
+
+//Create radius function
+function getRadius(magnitude) {
+  return magnitude * 15000;
+}
