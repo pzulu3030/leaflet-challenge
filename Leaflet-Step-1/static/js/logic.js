@@ -27,10 +27,10 @@ function createFeatures(earthquakeData) {
       return new L.circle(latlng, {
         radius: getRadius(feature.properties.mag),
         fillColor: getColor(feature.properties.mag),
-        fillOpacity: 0.5,
+        fillOpacity: 0.7,
         color: "black",
         stroke: true,
-        weight: 0.8,
+        weight: 0.7,
       });
     },
   });
@@ -86,6 +86,28 @@ function createMap(earthquakes) {
     "Fault Lines": earthquakes,
     Earthquakes: tectonicPlates,
   };
+
+  // Create the map
+  let myMap = L.map("mapid", {
+    center: [39, -93],
+    zoom: 5,
+    layers: [lightMap, earthquakes, tectonicPlates],
+  });
+
+  // Add tectonic plates data
+  d3.json(tectonicPlatesURL, function (tectonicData) {
+    L.geoJson(tectonicData, {
+      color: "orange",
+      weight: 2,
+    }).addTo(tectonicPlates);
+  });
+
+  //Create layer control to map
+  L.control
+    .layers(baseMaps, overlayMaps, {
+      collapsed: false,
+    })
+    .addTo(myMap);
 
   // Create legend
   var legend = L.control({
