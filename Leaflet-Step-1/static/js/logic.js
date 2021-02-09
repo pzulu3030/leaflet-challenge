@@ -41,7 +41,7 @@ function createFeatures(earthquakeData) {
 function createMap(earthquakes) {
   // Create  map layers
 
-  let airmap = L.tileLayer(
+  let topmap = L.tileLayer(
     "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
     {
       attribution:
@@ -83,7 +83,7 @@ function createMap(earthquakes) {
   // Create base maps
   let baseMaps = {
     Satellite: lightMap,
-    Grayscale: airmap,
+    Grayscale: topmap,
     Outdoors: satellite,
   };
 
@@ -109,27 +109,26 @@ function createMap(earthquakes) {
     })
     .addTo(myMap);
 
-  // Create legend
-  var legend = L.control({
-    position: "bottomleft",
-  });
+  //Create legend
 
-  legend.onAdd = function (myMap) {
-    var div = L.DomUtil.create("div", "info legend"),
-      grades = [0, 1, 2, 3, 4, 5],
-      labels = [];
+  let legend = L.control({ position: "bottomright" });
 
-    // Create legend
-    for (var i = 0; i < grades.length; i++) {
+  legend.onAdd = function () {
+    var div = L.DomUtil.create("mapid", "info legend"),
+      magnitudes = [0, 1, 2, 3, 4, 5];
+
+    for (var i = 0; i < magnitudes.length; i++) {
       div.innerHTML +=
         '<i style="background:' +
-        getColor(grades[i] + 1) +
+        getColor(magnitudes[i] + 1) +
         '"></i> ' +
-        grades[i] +
-        (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+        +magnitudes[i] +
+        (magnitudes[i + 1] ? " - " + magnitudes[i + 1] + "<br>" : " + ");
     }
+
     return div;
   };
+
   legend.addTo(myMap);
 }
 
@@ -152,5 +151,5 @@ function getColor(magnitude) {
 
 //Create radius function
 function getRadius(magnitude) {
-  return magnitude * 15000;
+  return magnitude * 23000;
 }
