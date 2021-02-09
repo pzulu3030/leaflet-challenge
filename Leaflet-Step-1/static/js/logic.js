@@ -1,7 +1,7 @@
 // Store the given API endpoint inside queryUrl
-earthquakeURL =
+let earthquakeURL =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-var tectonicPlatesURL =
+let tectonicPlatesURL =
   "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
 // Get request for data
@@ -71,13 +71,6 @@ function createMap(earthquakes) {
     }
   );
 
-  // Create base maps
-  let baseMaps = {
-    Satellite: lightMap,
-    Grayscale: airmap,
-    Outdoors: satellite,
-  };
-
   // Create tectonic layer
   let tectonicPlates = new L.LayerGroup();
 
@@ -85,6 +78,13 @@ function createMap(earthquakes) {
   let overlayMaps = {
     "Fault Lines": earthquakes,
     Earthquakes: tectonicPlates,
+  };
+
+  // Create base maps
+  let baseMaps = {
+    Satellite: lightMap,
+    Grayscale: airmap,
+    Outdoors: satellite,
   };
 
   // Create the map
